@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>前言 | WebSocket入门</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="前言" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="非常非常基础的WebSocket教程。" />
+<meta property="og:description" content="非常非常基础的WebSocket教程。" />
+<link rel="canonical" href="/ws-tutorial/overview/" />
+<meta property="og:url" content="/ws-tutorial/overview/" />
+<meta property="og:site_name" content="WebSocket入门" />
+<script type="application/ld+json">
+{"description":"非常非常基础的WebSocket教程。","@type":"WebPage","url":"/ws-tutorial/overview/","headline":"前言","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/ws-tutorial/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/ws-tutorial/feed.xml" title="WebSocket入门" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/ws-tutorial/">WebSocket入门</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/ws-tutorial/overview/">前言</a><a class="page-link" href="/ws-tutorial/hello-world/">Hello World</a><a class="page-link" href="/ws-tutorial/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">前言</h1>
+  </header>
+
+  <div class="post-content">
+    <p>在传统的HTTP请求响应模式下，服务器总是被动等待客户端/浏览器发送请求，
+如果没有客户端发请求，服务器就永远干等着。
+而且，服务器只能发响应给发送当前请求的客户端，无法响应给其他客户端。</p>
+
+<p>但是在如今的后web 2.0时代，很多web应用都需要具备客户端和服务器、客户端和客户端的实时交互能力。
+例如实时消息（网页版微信）、发单-抢单（滴滴出行）等，
+这些都要求一个客户端操作能够实时反映到一个或多个<strong>别人的</strong>客户端上。
+如果采用传统的HTTP方式，则需要每个客户端都不停地发送请求询问服务器是否有新消息（轮询），
+这对服务器来说是不小的压力，对移动客户端来说也是电池杀手，
+而且轮询的时间间隔不容易设置，短了，则服务器压力上升，电池续航下降；长了，则实时性得不到保证，用户体验变差。
+我们急需一种机制让服务器能够主动向客户端推送消息，甚至更好的，任何一端都能向另一端主动推送消息。</p>
+
+<p>为了达到这一目的，服务器和客户端必须时刻保持连接（长连接），以便在这个连接上随时发送消息，而不是像HTTP那样，一个请求响应就断开连接（短连接）。</p>
+
+<p>WebSocket技术正是为这种应用场景而生。</p>
+
+<p>WebSocket本质上只是TCP Socket的轻量级包装，它继承了TCP Socket的一切特性，例如全双工、包的有序性、自动重发机制等，
+但是由于WebSocket在握手机制上使用的是HTTP，使得它在建立连接之前就能做更多更高层次的权限验证，
+从而让服务器能够拒绝不符合要求的连接申请，节省连接数。</p>
+
+<p>本教程旨在引导新手入门，所以不会涉及详细的握手协议（因为不需要你实现），
+也不会使用任何高级框架（因为高级框架经常在WebSocket的基础上实现自定义协议，从而隐藏WebSocket的本质），
+更不是项目里会用到的技术。
+但是，我相信通过这篇基础教程，你会理解WebSocket的一些机制，在学习其他框架时会少一点迷茫。</p>
+
+<p>为了让这篇教程通俗易懂，这里采用Node.js作为服务器端（你喜欢Java？一边玩去！），
+JavaScript作为网页端（我也想用TypeScript，但不是谁都会），
+如果你喜欢其他语言/框架，一来我不会（Elixir/Phoenix除外），二来通常抽象层级太高，
+所以如果想学的话请自行Google相关教程。</p>
+
+
+  </div>
+
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/ws-tutorial/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">WebSocket入门</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">WebSocket入门</li><li><a class="u-email" href="mailto:aetherus.zhou@gmail.com">aetherus.zhou@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/Aetherus"><svg class="svg-icon"><use xlink:href="/ws-tutorial/assets/minima-social-icons.svg#github"></use></svg> <span class="username">Aetherus</span></a></li><li><a href="https://www.twitter.com/aetherus"><svg class="svg-icon"><use xlink:href="/ws-tutorial/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">aetherus</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>非常非常基础的WebSocket教程。</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
