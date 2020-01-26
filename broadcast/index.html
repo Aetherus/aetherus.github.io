@@ -3,17 +3,17 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
-<title>Hello World | WebSocket入门</title>
+<title>广播 | WebSocket入门</title>
 <meta name="generator" content="Jekyll v4.0.0" />
-<meta property="og:title" content="Hello World" />
+<meta property="og:title" content="广播" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="非常非常基础的WebSocket教程。" />
 <meta property="og:description" content="非常非常基础的WebSocket教程。" />
-<link rel="canonical" href="/hello-world/" />
-<meta property="og:url" content="/hello-world/" />
+<link rel="canonical" href="/broadcast/" />
+<meta property="og:url" content="/broadcast/" />
 <meta property="og:site_name" content="WebSocket入门" />
 <script type="application/ld+json">
-{"description":"非常非常基础的WebSocket教程。","@type":"WebPage","url":"/hello-world/","headline":"Hello World","@context":"https://schema.org"}</script>
+{"description":"非常非常基础的WebSocket教程。","@type":"WebPage","url":"/broadcast/","headline":"广播","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="WebSocket入门" /></head>
 <body><header class="site-header" role="banner">
@@ -36,46 +36,60 @@
         <article class="post">
 
   <header class="post-header">
-    <h1 class="post-title">Hello World</h1>
+    <h1 class="post-title">广播</h1>
   </header>
 
   <div class="post-content">
-    <p>废话少说，直接建项目。</p>
+    <p>知道了怎么发消息，实现广播就很简单了，只不过就是把同一条消息往各个客户端都发一遍而已。</p>
 
 <h2 id="服务器端">服务器端</h2>
 
-<p>先来创建一个服务器端项目。
-新建一个目录<code class="highlighter-rouge">ws-demo-server</code>，打开你的最佳拍档——命令行，cd到你新建的目录，开始安装依赖。</p>
+<p>为了方便，先装个lodash。</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ npm init  # 一路回车
-$ npm install --save ws
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ npm install --save lodash
 </code></pre></div></div>
 
-<p>创建文件index.js，并输入以下内容：</p>
+<p>然后是index.js的内容</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>const WebSocket = require('ws');
+const _ = require('lodash');
+
+var clients = [];  // 用来存放所有已连接的客户端
 
 const wsServer = new WebSocket.Server({port: 8080});
 
 wsServer.on('connection', function(ws) {
-  setInterval(function() {
-    ws.send('Hello, World!');
-  }, 2000);
+  // 每当有客户端连接上来的时候，
+  // 把它存进clients数组
+  clients.push(ws);
+
+  // 当收到客户端发来的消息时，
+  // 把这条消息广播到所有的客户端（包括自己）
+  ws.on('message', function(message) {
+    clients.forEach(function(client) {
+      client.send(message);
+    });
+  });
+
+  // 当客户端断开连接时，
+  // 把它从clients数组里移除
+  ws.on('close', function() {
+    clients = _.reject(function(client) {return client === ws});
+  });
+
+  // 当客户端异常断开时，
+  // 把它从clients数组里移除
+  ws.on('error', function() {
+    clients = _.reject(function(client) {return client === ws});
+  });
 });
 </code></pre></div></div>
 
-<p>这里我们首先创建了一个WebSocket服务器，并让它监听8080端口。
-当有客户端尝试连接服务器时，会触发服务器端的<code class="highlighter-rouge">'connection'</code>事件，
-我们只要给这个事件一个回调函数就能处理这个事件了，不用关心握手的细节。
-<code class="highlighter-rouge">'connection'</code>事件的回调函数只有一个参数——一个WebSocket对象。
-所有发送给这个ws对象的消息都会被当前客户端接收，但不会被其他客户端接收！
-我这里每两秒钟给这个客户端发送一条<code class="highlighter-rouge">'Hello, World'</code>消息，
-目的是展示服务器端可以在客户端不发任何请求的情况下，
-“自做主张”地往客户端发包。</p>
+<p>这次服务器端收发都有了，连断连处理也有了。</p>
 
-<h2 id="浏览器端">浏览器端</h2>
+<h2 id="客户端">客户端</h2>
 
-<p>我偷个懒，不建项目了，直接写个网页拉倒。</p>
+<p>老规矩，一个网页结束</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!doctype html&gt;</span>
 <span class="nt">&lt;html&gt;</span>
@@ -85,29 +99,35 @@ wsServer.on('connection', function(ws) {
     <span class="nt">&lt;script&gt;</span>
       <span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
         <span class="kd">var</span> <span class="nx">ws</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">WebSocket</span><span class="p">(</span><span class="dl">'</span><span class="s1">ws://localhost:8080/</span><span class="dl">'</span><span class="p">);</span>
+
+        <span class="c1">// 当ws收到消息时，把消息内容放进 #container 的第一条</span>
         <span class="nx">ws</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">message</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
-          <span class="nx">$</span><span class="p">(</span><span class="dl">'</span><span class="s1">&lt;p/&gt;</span><span class="dl">'</span><span class="p">).</span><span class="nx">text</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">data</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="dl">'</span><span class="s1">#container</span><span class="dl">'</span><span class="p">);</span>
+          <span class="nx">$</span><span class="p">(</span><span class="dl">'</span><span class="s1">&lt;p/&gt;</span><span class="dl">'</span><span class="p">).</span><span class="nx">text</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">data</span><span class="p">).</span><span class="nx">prependTo</span><span class="p">(</span><span class="dl">'</span><span class="s1">#container</span><span class="dl">'</span><span class="p">);</span>
+        <span class="p">});</span>
+        
+        <span class="c1">// 当点击“吼一声”按钮时，把 #message 输入框里的内容通过ws发到服务器去</span>
+        <span class="nx">$</span><span class="p">(</span><span class="dl">'</span><span class="s1">#shout</span><span class="dl">'</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+          <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="dl">'</span><span class="s1">#message</span><span class="dl">'</span><span class="p">).</span><span class="nx">val</span><span class="p">();</span>
+          <span class="k">if</span> <span class="p">(</span><span class="nx">message</span><span class="p">)</span> <span class="nx">ws</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
         <span class="p">})</span>
       <span class="p">});</span>
     <span class="nt">&lt;/script&gt;</span>
   <span class="nt">&lt;/head&gt;</span>
   <span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;div&gt;</span>
+      <span class="nt">&lt;input</span> <span class="na">id=</span><span class="s">"message"</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;button</span> <span class="na">id=</span><span class="s">"shout"</span><span class="nt">&gt;</span>吼一声<span class="nt">&lt;/button&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
     <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"container"</span><span class="nt">&gt;&lt;/div&gt;</span>
   <span class="nt">&lt;/body&gt;</span>
 <span class="nt">&lt;/html&gt;</span>
 </code></pre></div></div>
 
-<p>非常简单直白，我相信你自己看代码就能懂了。和服务器端一样，你不用操心握手的细节，只要指定URL即可。</p>
+<p>客户端也收发都有了。</p>
 
-<h2 id="websocket事件一览">WebSocket事件一览</h2>
+<p>现在你可以打开多个浏览器，操作一下试试什么叫广播了。</p>
 
-<ul>
-  <li><strong>connection</strong> 仅服务器端。当客户端发起连接时，服务器端会触发此事件</li>
-  <li><strong>open</strong> 仅客户端。当服务器端同意连接时，客户端会触发此事件</li>
-  <li><strong>message</strong> 当接受到另一端发来的消息时，触发此事件</li>
-  <li><strong>close</strong> 当连接正常断开时，触发此事件</li>
-  <li><strong>error</strong> 当连接异常断开时，触发此事件</li>
-</ul>
+<p>值得一提的是，所谓的广播不是客户端和客户端之间直接通信，而是经由服务器中转的通信。</p>
 
 
   </div>
