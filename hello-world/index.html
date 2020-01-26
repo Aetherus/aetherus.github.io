@@ -99,6 +99,16 @@ wsServer.on('connection', function(ws) {
 
 <p>非常简单直白，我相信你自己看代码就能懂了。和服务器端一样，你不用操心握手的细节，只要指定URL即可。</p>
 
+<h2 id="websocket事件一览">WebSocket事件一览</h2>
+
+<ul>
+  <li><strong>connection</strong> 仅服务器端。当客户端发起连接时，服务器端会触发此事件</li>
+  <li><strong>open</strong> 仅客户端。当服务器端同意连接时，客户端会触发此事件</li>
+  <li><strong>message</strong> 当接受到另一端发来的消息时，触发此事件</li>
+  <li><strong>close</strong> 当连接正常断开时，触发此事件</li>
+  <li><strong>error</strong> 当连接异常断开时，触发此事件</li>
+</ul>
+
 
   </div>
 
