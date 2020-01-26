@@ -13,7 +13,7 @@
 <meta property="og:url" content="/hello-world/" />
 <meta property="og:site_name" content="WebSocket入门" />
 <script type="application/ld+json">
-{"headline":"Hello World","description":"非常非常基础的WebSocket教程。","@type":"WebPage","url":"/hello-world/","@context":"https://schema.org"}</script>
+{"description":"非常非常基础的WebSocket教程。","@type":"WebPage","url":"/hello-world/","headline":"Hello World","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="WebSocket入门" /></head>
 <body><header class="site-header" role="banner">
@@ -67,9 +67,11 @@ wsServer.on('connection', function(ws) {
 <p>这里我们首先创建了一个WebSocket服务器，并让它监听8080端口。
 当有客户端尝试连接服务器时，会触发服务器端的<code class="highlighter-rouge">'connection'</code>事件，
 我们只要给这个事件一个回调函数就能处理这个事件了，不用关心握手的细节。
-<code class="highlighter-rouge">'connect'</code>事件的回调函数只有一个参数——一个WebSocket对象。
+<code class="highlighter-rouge">'connection'</code>事件的回调函数只有一个参数——一个WebSocket对象。
 所有发送给这个ws对象的消息都会被当前客户端接收，但不会被其他客户端接收！
-我这里每两秒钟给这个客户端发送一条<code class="highlighter-rouge">'Hello, World'</code>消息。</p>
+我这里每两秒钟给这个客户端发送一条<code class="highlighter-rouge">'Hello, World'</code>消息，
+目的是展示服务器端可以在客户端不发任何请求的情况下，
+“自做主张”地往客户端发包。</p>
 
 <h2 id="浏览器端">浏览器端</h2>
 
